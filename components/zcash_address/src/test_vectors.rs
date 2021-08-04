@@ -1,7 +1,7 @@
 use std::iter;
 
 use crate::{
-    unified::{self, Receiver},
+    unified::{self, address::Receiver},
     Network, ToAddress, ZcashAddress,
 };
 

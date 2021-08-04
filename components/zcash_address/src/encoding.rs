@@ -2,7 +2,7 @@ use std::{convert::TryInto, error::Error, fmt, str::FromStr};
 
 use bech32::{self, FromBase32, ToBase32, Variant};
 
-use crate::{kind::*, AddressKind, Network, ZcashAddress};
+use crate::{kind::unified::Unified, kind::*, AddressKind, Network, ZcashAddress};
 
 /// An error while attempting to parse a string as a Zcash address.
 #[derive(Debug, PartialEq)]
@@ -52,17 +52,16 @@ impl FromStr for ZcashAddress {
                     Vec::<u8>::from_base32(&data).map_err(|_| ParseError::InvalidEncoding)?;
 
                 let net = match hrp.as_str() {
-                    unified::MAINNET => Network::Main,
-                    unified::TESTNET => Network::Test,
-                    unified::REGTEST => Network::Regtest,
+                    unified::Address::MAINNET => Network::Main,
+                    unified::Address::TESTNET => Network::Test,
+                    unified::Address::REGTEST => Network::Regtest,
                     // We will not define new Bech32m address encodings.
                     _ => {
                         return Err(ParseError::NotZcash);
                     }
                 };
 
-                return (hrp.as_str(), &data[..])
-                    .try_into()
+                return unified::Address::from_bytes(hrp.as_str(), &data[..])
                     .map(AddressKind::Unified)
                     .map_err(|_| ParseError::InvalidEncoding)
                     .map(|kind| ZcashAddress { net, kind });
@@ -152,9 +151,9 @@ impl fmt::Display for ZcashAddress {
             ),
             AddressKind::Unified(data) => {
                 let hrp = match self.net {
-                    Network::Main => unified::MAINNET,
-                    Network::Test => unified::TESTNET,
-                    Network::Regtest => unified::REGTEST,
+                    Network::Main => unified::Address::MAINNET,
+                    Network::Test => unified::Address::TESTNET,
+                    Network::Regtest => unified::Address::REGTEST,
                 };
                 encode_bech32m(hrp, &data.to_bytes(hrp))
             }
@@ -230,21 +229,21 @@ mod tests {
             "u175h4qsgd8gujkevz283ka89ul6r2kr25xvachlt5w5srewdwcjacdtm3ku06jazzwk2klezj3kfy2jc9p65l5fgvjhekmnd4myk2m7xn",
             ZcashAddress {
                 net: Network::Main,
-                kind: AddressKind::Unified(unified::Address(vec![unified::Receiver::Sapling([0; 43])])),
+                kind: AddressKind::Unified(unified::Address(vec![unified::address::Receiver::Sapling([0; 43])])),
             },
         );
         encoding(
             "utest193cmy6pcjrw6cg8rqcxgq6z2095a2mc0hqu0g0gvnlf83em0szx23qtv9722s6qkssz80try4tynp73u9gee3zskye0ztzdz0snrxw7n",
             ZcashAddress {
                 net: Network::Test,
-                kind: AddressKind::Unified(unified::Address(vec![unified::Receiver::Sapling([0; 43])])),
+                kind: AddressKind::Unified(unified::Address(vec![unified::address::Receiver::Sapling([0; 43])])),
             },
         );
         encoding(
             "uregtest1dl4mka5saz8xwnf0pttr637jx6su0nejfhzcz3metcmqyzdgktsmm09ese6ew794xqcyp6476nuspvdvx2xk6gn2euvu7fdmrvwl87zx",
             ZcashAddress {
                 net: Network::Regtest,
-                kind: AddressKind::Unified(unified::Address(vec![unified::Receiver::Sapling([0; 43])])),
+                kind: AddressKind::Unified(unified::Address(vec![unified::address::Receiver::Sapling([0; 43])])),
             },
         );
     }
