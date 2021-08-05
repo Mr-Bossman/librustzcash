@@ -2,6 +2,7 @@ use std::{cmp, collections::HashSet, convert::TryFrom, error::Error, fmt, iter};
 
 pub(crate) mod address;
 mod f4jumble;
+pub(crate) mod fvk;
 pub(crate) mod ivk;
 
 pub(crate) use address::Address;
