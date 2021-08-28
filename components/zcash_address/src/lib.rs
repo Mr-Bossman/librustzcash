@@ -1,7 +1,7 @@
 mod convert;
 mod encoding;
 mod kind;
-
+#![feature(restricted_std)]
 #[cfg(test)]
 mod test_vectors;
 
