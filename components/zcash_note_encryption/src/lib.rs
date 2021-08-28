@@ -2,7 +2,7 @@
 //! for Zcash transactions. The implementations here provide
 //! functionality that is shared between the Sapling and Orchard
 //! protocols.
-
+#![feature(restricted_std)]
 use crypto_api_chachapoly::{ChaCha20Ietf, ChachaPolyIetf};
 use rand_core::RngCore;
 use subtle::{Choice, ConstantTimeEq};
